@@ -18,7 +18,7 @@
         <table class="jh-table table table-striped">
             <thead>
                 <tr>
-                    <th><span>ID</span></th>
+                    <!--<th><span>ID</span></th>-->
                     <th><span>Userhost</span></th>
                     <th><span>Password</span></th>
                     <th><span>User</span></th>
@@ -27,7 +27,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="connection in vm.connections track by connection.id">
-                    <td><a ui-sref="connection-detail({id:connection.id})">{{connection.id}}</a></td>
+                    <!--<td><a ui-sref="connection-detail({id:connection.id})">{{connection.id}}</a></td>-->
                     <td>{{connection.userhost}}</td>
                     <td>{{connection.password}}</td>
                     <td>
