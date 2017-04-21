@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <!--
+        Added the constraints for entity Disc.
+    -->
+    <changeSet id="20170421201756-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="connection_id"
+                                 baseTableName="disc"
+                                 constraintName="fk_disc_connection_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="connection"/>
+
+        <addForeignKeyConstraint baseColumnNames="logs_id"
+                                 baseTableName="disc"
+                                 constraintName="fk_disc_logs_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="disc_log"/>
+
+    </changeSet>
+</databaseChangeLog>

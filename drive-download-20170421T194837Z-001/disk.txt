@@ -1,0 +1,60 @@
+Dyski
+
+Polecenia:
+
+iostat -d 
+iostat -h
+iostat -d -x -t -m 
+
+-d -> display the device utilization report.
+-x -> display extended statistics.
+-t -> print the time for each report displayed.
+-m -> display statictics in megabytes per seconds.
+-j ID -> display device id
+-j LABEL -> display device label
+-j path -> display device label
+-j 
+
+IMPORTANT:
+http://www.admin-magazine.com/HPC/Articles/Monitoring-Storage-with-iostat 
+
+iostat_plotter
+
+Paramtery:
+	
+
+
+Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+sda               5,07    39,00   16,36    5,32     0,28     0,27    51,74     0,59   27,36   19,78   50,66   5,19  11,26
+
+
+rrqm/s  oraz wrqm/s – średnia liczba połączonych żądań odczytu i zapisu wysłanych na sekundę do urządzenia
+r/s oraz w/s – średnia liczba żądań odczytu i zapisu wysłanych na sekundę do urządzenia,
+rkB/s oraz wkB/s – średnia liczba kilobajtów na sekundę odczytanych i zapisanych w urządzeniu,
+avgrq-sz – średnia liczba sektorów na żądanie (zarówno odczyt jak i  zapis) – (rsec + wsec) / (r + w),
+avgqu-sz – średnia długość kolejki żądań wysłanych do urządzenia,
+await – średni czas oczekiwania na wykonanie żądania wysłanego do urządzenia. Obejmuje zarówno czas spędzony w kolejce do urządzenia jak i czas na realizację żądania przez urządzenie – await = czas_spędzony_w_kolejce + svctim,
+svctim – średni czas w jakim urządzenie wykonało zlecone żądanie,
+%util – procent swojego czasu jaki urządzenie poświęciło na realizację żądań
+
+
+fdisk - dane na temat dysku do zapisu
+
+iotop - nie trzeba zapisywać 
+
+
+Baza danych: ok
+	*PostgreSQL
+
+
+Problem:
+Jaki period ? 
+czy zapisywać dane po stronie serwera -> ładować dane do bazy -> i dopiero wyświetlać? 
+czy utrzymywać cały czas połączenie 
+
+
+Wymagania:
+	*dane od 2 dni do 7 wstecz zapisane
+
+Do sprawdzenia:
+	*Google chart spring 

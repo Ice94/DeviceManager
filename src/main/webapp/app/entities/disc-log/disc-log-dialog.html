@@ -1,0 +1,106 @@
+
+<form name="editForm" role="form" novalidate ng-submit="vm.save()" show-validation>
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                ng-click="vm.clear()">&times;</button>
+        <h4 class="modal-title" id="myDiscLogLabel">Create or edit a Disc Log</h4>
+    </div>
+    <div class="modal-body">
+        <jhi-alert-error></jhi-alert-error>
+        <div class="form-group" ng-show="vm.discLog.id">
+            <label for="id">ID</label>
+            <input type="text" class="form-control" id="id" name="id"
+                    ng-model="vm.discLog.id" readonly />
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_util">Util</label>
+            <input type="number" class="form-control" name="util" id="field_util"
+                    ng-model="vm.discLog.util"
+                    required/>
+            <div ng-show="editForm.util.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.util.$error.required">
+                    This field is required.
+                </p>
+                <p class="help-block"
+                    ng-show="editForm.util.$error.number">
+                    This field should be a number.
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_svctim">Svctim</label>
+            <input type="number" class="form-control" name="svctim" id="field_svctim"
+                    ng-model="vm.discLog.svctim"
+                    required/>
+            <div ng-show="editForm.svctim.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.svctim.$error.required">
+                    This field is required.
+                </p>
+                <p class="help-block"
+                    ng-show="editForm.svctim.$error.number">
+                    This field should be a number.
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_await">Await</label>
+            <input type="number" class="form-control" name="await" id="field_await"
+                    ng-model="vm.discLog.await"
+                    required/>
+            <div ng-show="editForm.await.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.await.$error.required">
+                    This field is required.
+                </p>
+                <p class="help-block"
+                    ng-show="editForm.await.$error.number">
+                    This field should be a number.
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_avgqusz">Avgqusz</label>
+            <input type="number" class="form-control" name="avgqusz" id="field_avgqusz"
+                    ng-model="vm.discLog.avgqusz"
+                    required/>
+            <div ng-show="editForm.avgqusz.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.avgqusz.$error.required">
+                    This field is required.
+                </p>
+                <p class="help-block"
+                    ng-show="editForm.avgqusz.$error.number">
+                    This field should be a number.
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_avgrqsz">Avgrqsz</label>
+            <input type="number" class="form-control" name="avgrqsz" id="field_avgrqsz"
+                    ng-model="vm.discLog.avgrqsz"
+                    required/>
+            <div ng-show="editForm.avgrqsz.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.avgrqsz.$error.required">
+                    This field is required.
+                </p>
+                <p class="help-block"
+                    ng-show="editForm.avgrqsz.$error.number">
+                    This field should be a number.
+                </p>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="vm.clear()">
+            <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span>Cancel</span>
+        </button>
+        <button type="submit" ng-disabled="editForm.$invalid || vm.isSaving" class="btn btn-primary">
+            <span class="glyphicon glyphicon-save"></span>&nbsp;<span>Save</span>
+        </button>
+    </div>
+</form>

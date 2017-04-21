@@ -1,0 +1,39 @@
+
+<div>
+    <h2><span>Disc Log</span> {{vm.discLog.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="row jh-entity-details">
+        <dt><span>Util</span></dt>
+        <dd>
+            <span>{{vm.discLog.util}}</span>
+        </dd>
+        <dt><span>Svctim</span></dt>
+        <dd>
+            <span>{{vm.discLog.svctim}}</span>
+        </dd>
+        <dt><span>Await</span></dt>
+        <dd>
+            <span>{{vm.discLog.await}}</span>
+        </dd>
+        <dt><span>Avgqusz</span></dt>
+        <dd>
+            <span>{{vm.discLog.avgqusz}}</span>
+        </dd>
+        <dt><span>Avgrqsz</span></dt>
+        <dd>
+            <span>{{vm.discLog.avgrqsz}}</span>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            ui-sref="{{ vm.previousState }}"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+
+    <button type="button" ui-sref="disc-log-detail.edit({id:vm.discLog.id})" class="btn btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span>
+        <span class="hidden-sm-down"> Edit</span>
+    </button>
+</div>

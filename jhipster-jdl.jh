@@ -1,0 +1,22 @@
+
+
+entity Connection{
+	userhost String required,
+    password String required
+}
+entity Disc{
+	name String required   
+}
+entity DiscLog{
+	util Double required,
+    svctim Double required,
+    await Double required,
+    avgqusz Double required,
+    avgrqsz Double required
+}
+relationship OneToMany {
+    Connection{Connections} to Disc
+}
+relationship OneToOne{
+	Disc{Logs} to DiscLog
+}

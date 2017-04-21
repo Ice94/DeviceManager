@@ -1,0 +1,64 @@
+<div>
+    <h2>Disc Logs</h2>
+    <jhi-alert></jhi-alert>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-4 no-padding-left">
+                <button class="btn btn-primary" ui-sref="disc-log.new" >
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span >
+                        Create new Disc Log
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="table-responsive">
+        <table class="jh-table table table-striped">
+            <thead>
+                <tr>
+                    <th><span>ID</span></th>
+                    <th><span>Util</span></th>
+                    <th><span>Svctim</span></th>
+                    <th><span>Await</span></th>
+                    <th><span>Avgqusz</span></th>
+                    <th><span>Avgrqsz</span></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="discLog in vm.discLogs track by discLog.id">
+                    <td><a ui-sref="disc-log-detail({id:discLog.id})">{{discLog.id}}</a></td>
+                    <td>{{discLog.util}}</td>
+                    <td>{{discLog.svctim}}</td>
+                    <td>{{discLog.await}}</td>
+                    <td>{{discLog.avgqusz}}</td>
+                    <td>{{discLog.avgrqsz}}</td>
+                    <td class="text-right">
+                        <div class="btn-group flex-btn-group-container">
+                            <button type="submit"
+                                    ui-sref="disc-log-detail({id:discLog.id})"
+                                    class="btn btn-info btn-sm">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                                <span class="hidden-sm-down"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="disc-log.edit({id:discLog.id})"
+                                    class="btn btn-primary btn-sm">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                <span class="hidden-sm-down"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="disc-log.delete({id:discLog.id})"
+                                    class="btn btn-danger btn-sm">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                                <span class="hidden-sm-down"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

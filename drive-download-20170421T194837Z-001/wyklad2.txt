@@ -1,0 +1,19 @@
+Uzytkownicy i grupy zarzadzanie 
+
+users:
+FUID
+ruid - real user id, defines real owner of the process
+		affect the permissions for sending signals
+
+Zarządzanie userami
+
+passwd - zmiana hasłą
+chage -d 0 username polityki haseł definiować dla uzytkowników
+userdel -r username usuwanie uzytkownika
+useradd,
+usermod,
+adduser,
+addgroup
+
+Gecos filed:
+	stored in /etc/passwd

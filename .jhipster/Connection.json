@@ -1,0 +1,40 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "connections",
+            "otherEntityName": "disc",
+            "otherEntityRelationshipName": "connection"
+        },
+        {
+            "relationshipName": "user",
+            "otherEntityName": "user",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "login",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "connection"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "userhost",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "password",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "changelogDate": "20170421201755",
+    "dto": "no",
+    "service": "no",
+    "entityTableName": "connection",
+    "pagination": "no"
+}

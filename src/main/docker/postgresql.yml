@@ -1,0 +1,12 @@
+version: '2'
+services:
+    devicemanager-postgresql:
+        container_name: devicemanager-postgresql
+        image: postgres:9.5.4
+        # volumes:
+        #     - ~/volumes/jhipster/DeviceManager/postgresql/:/var/lib/postgresql/
+        environment:
+            - POSTGRES_USER=DeviceManager
+            - POSTGRES_PASSWORD=
+        ports:
+            - 5432:5432
