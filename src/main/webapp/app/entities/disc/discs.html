@@ -3,7 +3,6 @@
     <jhi-alert></jhi-alert>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xs-4 no-padding-left">
                 <!--<button class="btn btn-primary" ui-sref="disc.new" >-->
                     <!--<span class="glyphicon glyphicon-plus"></span>-->
                     <!--<span >-->
@@ -18,7 +17,7 @@
         <table class="jh-table table table-striped">
             <thead>
                 <tr>
-                    <th><span>ID</span></th>
+                    <!--<th><span>ID</span></th>-->
                     <th><span>Name</span></th>
                     <th><span>Connection</span></th>
                     <!--<th><span>Logs</span></th>-->
@@ -27,7 +26,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="disc in vm.discs track by disc.id">
-                    <td><a ui-sref="disc-detail({id:disc.id})">{{disc.id}}</a></td>
+                    <!--<td><a ui-sref="disc-detail({id:disc.id})">{{disc.id}}</a></td>-->
                     <td>{{disc.name}}</td>
                     <td>
                         <a ui-sref="connection-detail({id:disc.connection.id})">{{disc.connection.id}}</a>
@@ -37,6 +36,13 @@
                     <!--</td>-->
                     <td class="text-right">
                         <div class="btn-group flex-btn-group-container">
+                            <button type="submit"
+                                    ui-sref="disc-detail({id:disc.id})"
+                                    class="btn btn-info btn-sm">
+                                <span class="glyphicon glyphicon glyphicon-refresh"></span>
+                                <span class="hidden-sm-down"></span>
+                                <span>Refresh</span>
+                            </button>
                             <button type="submit"
                                     ui-sref="disc-detail({id:disc.id})"
                                     class="btn btn-info btn-sm">
