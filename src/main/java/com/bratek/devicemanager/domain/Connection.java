@@ -28,7 +28,7 @@ public class Connection implements Serializable {
 
     @NotNull
     @Column(name = "userhost", nullable = false)
-    private String userhost;
+    private String userHost;
 
     @NotNull
     @Column(name = "password", nullable = false)
@@ -50,17 +50,17 @@ public class Connection implements Serializable {
         this.id = id;
     }
 
-    public String getUserhost() {
-        return userhost;
+    public String getUserHost() {
+        return userHost;
     }
 
     public Connection userhost(String userhost) {
-        this.userhost = userhost;
+        this.userHost = userhost;
         return this;
     }
 
-    public void setUserhost(String userhost) {
-        this.userhost = userhost;
+    public void setUserHost(String userHost) {
+        this.userHost = userHost;
     }
 
     public String getPassword() {
@@ -138,7 +138,7 @@ public class Connection implements Serializable {
     public String toString() {
         return "Connection{" +
             "id=" + id +
-            ", userhost='" + userhost + "'" +
+            ", userHost='" + userHost + "'" +
             ", password='" + password + "'" +
             '}';
     }

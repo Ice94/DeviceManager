@@ -1,11 +1,11 @@
 
 
 entity Connection{
-	userhost String required,
+	userHost String required,
     password String required
 }
 entity Disc{
-	name String required   
+	name String required
 }
 entity DiscLog{
 	util Double required,

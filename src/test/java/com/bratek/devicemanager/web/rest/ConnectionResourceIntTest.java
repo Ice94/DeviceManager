@@ -120,7 +120,7 @@ public class ConnectionResourceIntTest {
         List<Connection> connectionList = connectionRepository.findAll();
         assertThat(connectionList).hasSize(databaseSizeBeforeCreate + 1);
         Connection testConnection = connectionList.get(connectionList.size() - 1);
-        assertThat(testConnection.getUserhost()).isEqualTo(DEFAULT_USERHOST);
+        assertThat(testConnection.getUserHost()).isEqualTo(DEFAULT_USERHOST);
         assertThat(testConnection.getPassword()).isEqualTo(DEFAULT_PASSWORD);
     }
 
@@ -149,7 +149,7 @@ public class ConnectionResourceIntTest {
     public void checkUserhostIsRequired() throws Exception {
         int databaseSizeBeforeTest = connectionRepository.findAll().size();
         // set the field null
-        connection.setUserhost(null);
+        connection.setUserHost(null);
 
         // Create the Connection, which fails.
 
@@ -241,7 +241,7 @@ public class ConnectionResourceIntTest {
         List<Connection> connectionList = connectionRepository.findAll();
         assertThat(connectionList).hasSize(databaseSizeBeforeUpdate);
         Connection testConnection = connectionList.get(connectionList.size() - 1);
-        assertThat(testConnection.getUserhost()).isEqualTo(UPDATED_USERHOST);
+        assertThat(testConnection.getUserHost()).isEqualTo(UPDATED_USERHOST);
         assertThat(testConnection.getPassword()).isEqualTo(UPDATED_PASSWORD);
     }
 
