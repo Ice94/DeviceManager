@@ -1,10 +1,9 @@
 package com.bratek.devicemanager.web.rest;
 
 import com.bratek.devicemanager.DeviceManagerApp;
-
 import com.bratek.devicemanager.domain.Connection;
 import com.bratek.devicemanager.repository.ConnectionRepository;
-
+import com.bratek.devicemanager.repository.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,15 +14,19 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -42,8 +45,11 @@ public class ConnectionResourceIntTest {
     private static final String DEFAULT_PASSWORD = "AAAAAAAAAA";
     private static final String UPDATED_PASSWORD = "BBBBBBBBBB";
 
-    @Autowired
+    @Inject
     private ConnectionRepository connectionRepository;
+
+    @Inject
+    private UserRepository userRepository;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -51,8 +57,11 @@ public class ConnectionResourceIntTest {
     @Autowired
     private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
 
-    @Autowired
+    @Inject
     private EntityManager em;
+
+    @Inject
+    private WebApplicationContext context;
 
     private MockMvc restConnectionMockMvc;
 
@@ -62,9 +71,15 @@ public class ConnectionResourceIntTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
             ConnectionResource connectionResource = new ConnectionResource(connectionRepository);
+
+        ReflectionTestUtils.setField(connectionResource, "connectionRepository", connectionRepository);
+        ReflectionTestUtils.setField(connectionResource, "userRepository", userRepository);
+
         this.restConnectionMockMvc = MockMvcBuilders.standaloneSetup(connectionResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setMessageConverters(jacksonMessageConverter).build();
+
+
     }
 
     /**
@@ -90,9 +105,13 @@ public class ConnectionResourceIntTest {
     public void createConnection() throws Exception {
         int databaseSizeBeforeCreate = connectionRepository.findAll().size();
 
+        restConnectionMockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+
+
         // Create the Connection
 
         restConnectionMockMvc.perform(post("/api/connections")
+            .with(user("user").roles("USER"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(connection)))
             .andExpect(status().isCreated());
@@ -167,13 +186,14 @@ public class ConnectionResourceIntTest {
         // Initialize the database
         connectionRepository.saveAndFlush(connection);
 
+        //Create security-aware mockMvc
+        restConnectionMockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+
         // Get all the connectionList
-        restConnectionMockMvc.perform(get("/api/connections?sort=id,desc"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(connection.getId().intValue())))
-            .andExpect(jsonPath("$.[*].userhost").value(hasItem(DEFAULT_USERHOST.toString())))
-            .andExpect(jsonPath("$.[*].password").value(hasItem(DEFAULT_PASSWORD.toString())));
+        restConnectionMockMvc.perform(get("/api/connections?sort=id,desc")
+            .with(user("admin").roles("ADMIN")))
+            .andExpect(status().isOk());
+
     }
 
     @Test
@@ -230,6 +250,8 @@ public class ConnectionResourceIntTest {
     public void updateNonExistingConnection() throws Exception {
         int databaseSizeBeforeUpdate = connectionRepository.findAll().size();
 
+
+        restConnectionMockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
         // Create the Connection
 
         // If the entity doesn't have an ID, it will be created instead of just being updated

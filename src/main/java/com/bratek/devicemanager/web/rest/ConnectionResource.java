@@ -1,13 +1,21 @@
 package com.bratek.devicemanager.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
 import com.bratek.devicemanager.domain.Connection;
-
 import com.bratek.devicemanager.repository.ConnectionRepository;
+import com.bratek.devicemanager.repository.UserRepository;
+import com.bratek.devicemanager.security.AuthoritiesConstants;
+import com.bratek.devicemanager.security.SecurityUtils;
 import com.bratek.devicemanager.web.rest.util.HeaderUtil;
+import com.bratek.devicemanager.web.rest.util.PaginationUtil;
+import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +35,11 @@ public class ConnectionResource {
     private final Logger log = LoggerFactory.getLogger(ConnectionResource.class);
 
     private static final String ENTITY_NAME = "connection";
-        
+
     private final ConnectionRepository connectionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public ConnectionResource(ConnectionRepository connectionRepository) {
         this.connectionRepository = connectionRepository;
@@ -47,6 +58,10 @@ public class ConnectionResource {
         log.debug("REST request to save Connection : {}", connection);
         if (connection.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new connection cannot already have an ID")).body(null);
+        }
+        if(!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)){
+            log.debug("No user passed in, using current user: {}", SecurityUtils.getCurrentUserLogin());
+            connection.setUser(userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).get());
         }
         Connection result = connectionRepository.save(connection);
         return ResponseEntity.created(new URI("/api/connections/" + result.getId()))
@@ -81,13 +96,8 @@ public class ConnectionResource {
      *
      * @return the ResponseEntity with status 200 (OK) and the list of connections in body
      */
-    @GetMapping("/connections")
-    @Timed
-    public List<Connection> getAllConnections() {
-        log.debug("REST request to get all Connections");
-        List<Connection> connections = connectionRepository.findAll();
-        return connections;
-    }
+
+
 
     /**
      * GET  /connections/:id : get the "id" connection.
@@ -115,6 +125,23 @@ public class ConnectionResource {
         log.debug("REST request to delete Connection : {}", id);
         connectionRepository.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+    }
+
+    @GetMapping("/connections")
+    @Timed
+    public ResponseEntity<List<Connection>> getAllConnections(Pageable pageable) throws URISyntaxException{
+        log.debug("REST request to get a page of Points");
+        Page<Connection> page;
+        if(SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)){
+            page = connectionRepository.findByUserIsCurrentUser(pageable);
+        }
+        else{
+            page = connectionRepository.findByUserIsCurrentUser(pageable);
+        }
+
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/connections");
+
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
 }
