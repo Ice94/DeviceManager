@@ -3,8 +3,10 @@ package com.bratek.devicemanager.web.rest;
 import com.bratek.devicemanager.DeviceManagerApp;
 
 import com.bratek.devicemanager.domain.Disc;
+import com.bratek.devicemanager.repository.ConnectionRepository;
 import com.bratek.devicemanager.repository.DiscRepository;
 
+import com.bratek.devicemanager.security.AuthoritiesConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,12 +20,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -50,6 +55,12 @@ public class DiscResourceIntTest {
 
     @Autowired
     private EntityManager em;
+
+    @Autowired
+    private ConnectionRepository connectionRepository;
+
+    @Autowired
+    private WebApplicationContext context;
 
     private MockMvc restDiscMockMvc;
 
@@ -86,9 +97,16 @@ public class DiscResourceIntTest {
     public void createDisc() throws Exception {
         int databaseSizeBeforeCreate = discRepository.findAll().size();
 
+        // Create security-aware mock
+        restDiscMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
         // Create the Disc
 
         restDiscMockMvc.perform(post("/api/discs")
+            .with(user(AuthoritiesConstants.USER))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(disc)))
             .andExpect(status().isCreated());
@@ -144,8 +162,16 @@ public class DiscResourceIntTest {
         // Initialize the database
         discRepository.saveAndFlush(disc);
 
+        // Create security-aware mock
+        restDiscMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
+
         // Get all the discList
-        restDiscMockMvc.perform(get("/api/discs?sort=id,desc"))
+        restDiscMockMvc.perform(get("/api/discs?sort=id,desc")
+            .with(user(AuthoritiesConstants.ADMIN).roles(AuthoritiesConstants.ADMIN)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(disc.getId().intValue())))
