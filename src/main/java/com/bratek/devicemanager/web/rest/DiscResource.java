@@ -61,7 +61,7 @@ public class DiscResource {
         }
         if(!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)){
             log.debug("No user passed in, using current user: {}", SecurityUtils.getCurrentUserLogin());
-  //          disc.setConnection(connectionRepository.findByUserIsCurrentUser(SecurityUtils.getCurrentUserLogin());
+            disc.setConnection(connectionRepository.findByUserIsCurrentUser(SecurityUtils.getCurrentUserLogin()).get(0));
         }
         Disc result = discRepository.save(disc);
         return ResponseEntity.created(new URI("/api/discs/" + result.getId()))
