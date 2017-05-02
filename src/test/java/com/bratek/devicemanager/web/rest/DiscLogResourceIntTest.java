@@ -5,6 +5,7 @@ import com.bratek.devicemanager.DeviceManagerApp;
 import com.bratek.devicemanager.domain.DiscLog;
 import com.bratek.devicemanager.repository.DiscLogRepository;
 
+import com.bratek.devicemanager.repository.DiscRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,12 +19,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -62,6 +66,12 @@ public class DiscLogResourceIntTest {
 
     @Autowired
     private EntityManager em;
+
+    @Autowired
+    private DiscRepository discRepository;
+
+    @Autowired
+    private WebApplicationContext context;
 
     private MockMvc restDiscLogMockMvc;
 
@@ -102,9 +112,16 @@ public class DiscLogResourceIntTest {
     public void createDiscLog() throws Exception {
         int databaseSizeBeforeCreate = discLogRepository.findAll().size();
 
+        restDiscLogMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
+
         // Create the DiscLog
 
         restDiscLogMockMvc.perform(post("/api/disc-logs")
+            .with(user("user"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(discLog)))
             .andExpect(status().isCreated());
@@ -236,8 +253,14 @@ public class DiscLogResourceIntTest {
         // Initialize the database
         discLogRepository.saveAndFlush(discLog);
 
+        restDiscLogMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
         // Get all the discLogList
-        restDiscLogMockMvc.perform(get("/api/disc-logs?sort=id,desc"))
+        restDiscLogMockMvc.perform(get("/api/disc-logs?sort=id,desc")
+            .with(user("admin").roles("ADMIN")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(discLog.getId().intValue())))
