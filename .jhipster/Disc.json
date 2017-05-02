@@ -6,14 +6,6 @@
             "otherEntityName": "connection",
             "relationshipType": "many-to-one",
             "otherEntityField": "id"
-        },
-        {
-            "relationshipType": "one-to-one",
-            "relationshipName": "logs",
-            "otherEntityName": "discLog",
-            "otherEntityField": "id",
-            "ownerSide": true,
-            "otherEntityRelationshipName": "disc"
         }
     ],
     "fields": [
@@ -26,8 +18,8 @@
         }
     ],
     "changelogDate": "20170421201756",
-    "entityTableName": "disc",
     "dto": "no",
-    "pagination": "no",
-    "service": "no"
+    "service": "no",
+    "entityTableName": "disc",
+    "pagination": "no"
 }

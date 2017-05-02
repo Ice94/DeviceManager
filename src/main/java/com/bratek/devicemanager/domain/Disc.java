@@ -30,10 +30,6 @@ public class Disc implements Serializable {
     @ManyToOne
     private Connection connection;
 
-    @OneToOne
-    @JoinColumn(unique = true)
-    private DiscLog logs;
-
     public Long getId() {
         return id;
     }
@@ -66,19 +62,6 @@ public class Disc implements Serializable {
 
     public void setConnection(Connection connection) {
         this.connection = connection;
-    }
-
-    public DiscLog getLogs() {
-        return logs;
-    }
-
-    public Disc logs(DiscLog discLog) {
-        this.logs = discLog;
-        return this;
-    }
-
-    public void setLogs(DiscLog discLog) {
-        this.logs = discLog;
     }
 
     @Override

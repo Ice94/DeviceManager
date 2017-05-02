@@ -14,11 +14,5 @@
                                  referencedColumnNames="id"
                                  referencedTableName="connection"/>
 
-        <addForeignKeyConstraint baseColumnNames="logs_id"
-                                 baseTableName="disc"
-                                 constraintName="fk_disc_logs_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="disc_log"/>
-
     </changeSet>
 </databaseChangeLog>
