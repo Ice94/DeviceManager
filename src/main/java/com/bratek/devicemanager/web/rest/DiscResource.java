@@ -1,13 +1,21 @@
 package com.bratek.devicemanager.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
 import com.bratek.devicemanager.domain.Disc;
-
+import com.bratek.devicemanager.repository.ConnectionRepository;
 import com.bratek.devicemanager.repository.DiscRepository;
+import com.bratek.devicemanager.security.AuthoritiesConstants;
+import com.bratek.devicemanager.security.SecurityUtils;
 import com.bratek.devicemanager.web.rest.util.HeaderUtil;
+import com.bratek.devicemanager.web.rest.util.PaginationUtil;
+import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +35,11 @@ public class DiscResource {
     private final Logger log = LoggerFactory.getLogger(DiscResource.class);
 
     private static final String ENTITY_NAME = "disc";
-        
+
     private final DiscRepository discRepository;
+
+    @Autowired
+    private ConnectionRepository connectionRepository;
 
     public DiscResource(DiscRepository discRepository) {
         this.discRepository = discRepository;
@@ -47,6 +58,10 @@ public class DiscResource {
         log.debug("REST request to save Disc : {}", disc);
         if (disc.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new disc cannot already have an ID")).body(null);
+        }
+        if(!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)){
+            log.debug("No user passed in, using current user: {}", SecurityUtils.getCurrentUserLogin());
+  //          disc.setConnection(connectionRepository.findByUserIsCurrentUser(SecurityUtils.getCurrentUserLogin());
         }
         Disc result = discRepository.save(disc);
         return ResponseEntity.created(new URI("/api/discs/" + result.getId()))
@@ -83,10 +98,13 @@ public class DiscResource {
      */
     @GetMapping("/discs")
     @Timed
-    public List<Disc> getAllDiscs() {
-        log.debug("REST request to get all Discs");
-        List<Disc> discs = discRepository.findAll();
-        return discs;
+    public ResponseEntity<List<Disc>> getAllDiscs(Pageable pageable) throws URISyntaxException{
+        log.debug("REST request to get a page of Discs");
+        Page<Disc> page;
+        page = discRepository.findByUserIsCurrentUser(pageable);
+
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/discs");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
     /**

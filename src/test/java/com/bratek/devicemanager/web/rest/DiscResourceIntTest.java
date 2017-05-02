@@ -1,12 +1,9 @@
 package com.bratek.devicemanager.web.rest;
 
 import com.bratek.devicemanager.DeviceManagerApp;
-
 import com.bratek.devicemanager.domain.Disc;
 import com.bratek.devicemanager.repository.ConnectionRepository;
 import com.bratek.devicemanager.repository.DiscRepository;
-
-import com.bratek.devicemanager.security.AuthoritiesConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -106,7 +103,7 @@ public class DiscResourceIntTest {
         // Create the Disc
 
         restDiscMockMvc.perform(post("/api/discs")
-            .with(user(AuthoritiesConstants.USER))
+            .with(user("USER"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(disc)))
             .andExpect(status().isCreated());
@@ -171,7 +168,7 @@ public class DiscResourceIntTest {
 
         // Get all the discList
         restDiscMockMvc.perform(get("/api/discs?sort=id,desc")
-            .with(user(AuthoritiesConstants.ADMIN).roles(AuthoritiesConstants.ADMIN)))
+            .with(user("ADMIN").roles("ADMIN")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(disc.getId().intValue())))
