@@ -43,6 +43,17 @@ public class DiscLog implements Serializable {
     @Column(name = "avgrqsz", nullable = false)
     private Double avgrqsz;
 
+    @ManyToOne
+    private Disc disc;
+
+    public Disc getDisc() {
+        return disc;
+    }
+
+    public void setDisc(Disc disc) {
+        this.disc = disc;
+    }
+
     public Long getId() {
         return id;
     }

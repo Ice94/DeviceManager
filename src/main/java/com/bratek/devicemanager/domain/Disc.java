@@ -1,11 +1,14 @@
 package com.bratek.devicemanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Objects;
 
 /**
@@ -29,6 +32,11 @@ public class Disc implements Serializable {
 
     @ManyToOne
     private Connection connection;
+
+    @OneToMany(mappedBy = "disc")
+    @JsonIgnore
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Set<DiscLog> discLogs = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -62,6 +70,31 @@ public class Disc implements Serializable {
 
     public void setConnection(Connection connection) {
         this.connection = connection;
+    }
+
+    public Set<DiscLog> getDiscLogs() {
+        return discLogs;
+    }
+
+    public Disc discLogs(Set<DiscLog> discLogs) {
+        this.discLogs = discLogs;
+        return this;
+    }
+
+    public Disc addDiscLog(DiscLog discLog) {
+        this.discLogs.add(discLog);
+        discLog.setDisc(this);
+        return this;
+    }
+
+    public Disc removeDiscLog(DiscLog discLog) {
+        this.discLogs.remove(discLog);
+        discLog.setDisc(null);
+        return this;
+    }
+
+    public void setDiscLogs(Set<DiscLog> discLogs) {
+        this.discLogs = discLogs;
     }
 
     @Override

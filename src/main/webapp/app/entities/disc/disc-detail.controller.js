@@ -5,9 +5,9 @@
         .module('deviceManagerApp')
         .controller('DiscDetailController', DiscDetailController);
 
-    DiscDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'entity', 'Disc', 'Connection'];
+    DiscDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'entity', 'Disc', 'Connection', 'DiscLog'];
 
-    function DiscDetailController($scope, $rootScope, $stateParams, previousState, entity, Disc, Connection) {
+    function DiscDetailController($scope, $rootScope, $stateParams, previousState, entity, Disc, Connection, DiscLog) {
         var vm = this;
 
         vm.disc = entity;

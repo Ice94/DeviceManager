@@ -28,5 +28,7 @@
 
     <cache alias="com.bratek.devicemanager.domain.DiscLog" uses-template="simple"/>
 
+    <cache alias="com.bratek.devicemanager.domain.Disc.discLogs" uses-template="simple"/>
+
     <!-- jhipster-needle-ehcache-add-entry -->
 </config>

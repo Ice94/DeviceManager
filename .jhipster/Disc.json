@@ -6,6 +6,12 @@
             "otherEntityName": "connection",
             "relationshipType": "many-to-one",
             "otherEntityField": "id"
+        },
+        {
+            "relationshipName": "discLog",
+            "otherEntityName": "discLog",
+            "relationshipType": "one-to-many",
+            "otherEntityRelationshipName": "disc"
         }
     ],
     "fields": [

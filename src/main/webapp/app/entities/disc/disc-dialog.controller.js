@@ -5,15 +5,16 @@
         .module('deviceManagerApp')
         .controller('DiscDialogController', DiscDialogController);
 
-    DiscDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'entity', 'Disc', 'Connection'];
+    DiscDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'entity', 'Disc', 'Connection', 'DiscLog'];
 
-    function DiscDialogController ($timeout, $scope, $stateParams, $uibModalInstance, entity, Disc, Connection) {
+    function DiscDialogController ($timeout, $scope, $stateParams, $uibModalInstance, entity, Disc, Connection, DiscLog) {
         var vm = this;
 
         vm.disc = entity;
         vm.clear = clear;
         vm.save = save;
         vm.connections = Connection.query();
+        vm.disclogs = DiscLog.query();
 
         $timeout(function (){
             angular.element('.form-group:eq(1)>input').focus();
