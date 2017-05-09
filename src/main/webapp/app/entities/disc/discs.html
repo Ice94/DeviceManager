@@ -18,7 +18,7 @@
         <table class="jh-table table table-striped">
             <thead>
                 <tr>
-                    <th><span>ID</span></th>
+                    <!--<th><span>ID</span></th>-->
                     <th><span>Name</span></th>
                     <th><span>Connection</span></th>
                     <th></th>
@@ -26,7 +26,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="disc in vm.discs track by disc.id">
-                    <td><a ui-sref="disc-detail({id:disc.id})">{{disc.id}}</a></td>
+                    <!--<td><a ui-sref="disc-detail({id:disc.id})">{{disc.id}}</a></td>-->
                     <td>{{disc.name}}</td>
                     <td>
                         <a ui-sref="connection-detail({id:disc.connection.id})">{{disc.connection.id}}</a>
