@@ -1,13 +1,17 @@
 package com.bratek.devicemanager.web.rest;
 
+import com.bratek.devicemanager.SSHConnector.SSHConnector;
 import com.bratek.devicemanager.domain.Connection;
+import com.bratek.devicemanager.domain.Disc;
 import com.bratek.devicemanager.repository.ConnectionRepository;
+import com.bratek.devicemanager.repository.DiscRepository;
 import com.bratek.devicemanager.repository.UserRepository;
 import com.bratek.devicemanager.security.AuthoritiesConstants;
 import com.bratek.devicemanager.security.SecurityUtils;
 import com.bratek.devicemanager.web.rest.util.HeaderUtil;
 import com.bratek.devicemanager.web.rest.util.PaginationUtil;
 import com.codahale.metrics.annotation.Timed;
+import com.jcraft.jsch.JSchException;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +24,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 /**
  * REST controller for managing Connection.
@@ -38,8 +44,15 @@ public class ConnectionResource {
 
     private final ConnectionRepository connectionRepository;
 
+    private  DiscResource discResource;
+
+    private SSHConnector sshConnector;
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private DiscRepository discRepository;
 
     public ConnectionResource(ConnectionRepository connectionRepository) {
         this.connectionRepository = connectionRepository;
@@ -54,7 +67,9 @@ public class ConnectionResource {
      */
     @PostMapping("/connections")
     @Timed
-    public ResponseEntity<Connection> createConnection(@Valid @RequestBody Connection connection) throws URISyntaxException {
+    public ResponseEntity<Connection> createConnection(@Valid @RequestBody Connection connection) throws URISyntaxException, IOException, JSchException {
+        discResource = new DiscResource(discRepository);
+
         log.debug("REST request to save Connection : {}", connection);
         if (connection.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new connection cannot already have an ID")).body(null);
@@ -64,6 +79,17 @@ public class ConnectionResource {
             connection.setUser(userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).get());
         }
         Connection result = connectionRepository.save(connection);
+        sshConnector = new SSHConnector(result.getUserHost(), result.getPassword());
+        List<String> names = sshConnector.getDiscNames();
+
+        for (String tmp: names) {
+            Disc disc = new Disc();
+            disc.setConnection(result);
+            disc.setName(tmp);
+            disc.setId(new Random().nextLong());
+            discRepository.save(disc);
+        }
+
         return ResponseEntity.created(new URI("/api/connections/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -80,7 +106,7 @@ public class ConnectionResource {
      */
     @PutMapping("/connections")
     @Timed
-    public ResponseEntity<Connection> updateConnection(@Valid @RequestBody Connection connection) throws URISyntaxException {
+    public ResponseEntity<Connection> updateConnection(@Valid @RequestBody Connection connection) throws URISyntaxException, IOException, JSchException {
         log.debug("REST request to update Connection : {}", connection);
         if (connection.getId() == null) {
             return createConnection(connection);
