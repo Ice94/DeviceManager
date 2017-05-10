@@ -5,7 +5,6 @@ import com.bratek.devicemanager.DeviceManagerApp;
 import com.bratek.devicemanager.domain.DiscLog;
 import com.bratek.devicemanager.repository.DiscLogRepository;
 
-import com.bratek.devicemanager.repository.DiscRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,15 +18,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.List;
 
+import static com.bratek.devicemanager.web.rest.TestUtil.sameInstant;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -55,6 +56,9 @@ public class DiscLogResourceIntTest {
     private static final Double DEFAULT_AVGRQSZ = 1D;
     private static final Double UPDATED_AVGRQSZ = 2D;
 
+    private static final ZonedDateTime DEFAULT_DATE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
+    private static final ZonedDateTime UPDATED_DATE = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
+
     @Autowired
     private DiscLogRepository discLogRepository;
 
@@ -66,12 +70,6 @@ public class DiscLogResourceIntTest {
 
     @Autowired
     private EntityManager em;
-
-    @Autowired
-    private DiscRepository discRepository;
-
-    @Autowired
-    private WebApplicationContext context;
 
     private MockMvc restDiscLogMockMvc;
 
@@ -98,7 +96,8 @@ public class DiscLogResourceIntTest {
                 .svctim(DEFAULT_SVCTIM)
                 .await(DEFAULT_AWAIT)
                 .avgqusz(DEFAULT_AVGQUSZ)
-                .avgrqsz(DEFAULT_AVGRQSZ);
+                .avgrqsz(DEFAULT_AVGRQSZ)
+                .date(DEFAULT_DATE);
         return discLog;
     }
 
@@ -112,16 +111,9 @@ public class DiscLogResourceIntTest {
     public void createDiscLog() throws Exception {
         int databaseSizeBeforeCreate = discLogRepository.findAll().size();
 
-        restDiscLogMockMvc = MockMvcBuilders
-            .webAppContextSetup(context)
-            .apply(springSecurity())
-            .build();
-
-
         // Create the DiscLog
 
         restDiscLogMockMvc.perform(post("/api/disc-logs")
-            .with(user("user"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(discLog)))
             .andExpect(status().isCreated());
@@ -135,6 +127,7 @@ public class DiscLogResourceIntTest {
         assertThat(testDiscLog.getAwait()).isEqualTo(DEFAULT_AWAIT);
         assertThat(testDiscLog.getAvgqusz()).isEqualTo(DEFAULT_AVGQUSZ);
         assertThat(testDiscLog.getAvgrqsz()).isEqualTo(DEFAULT_AVGRQSZ);
+        assertThat(testDiscLog.getDate()).isEqualTo(DEFAULT_DATE);
     }
 
     @Test
@@ -253,14 +246,8 @@ public class DiscLogResourceIntTest {
         // Initialize the database
         discLogRepository.saveAndFlush(discLog);
 
-        restDiscLogMockMvc = MockMvcBuilders
-            .webAppContextSetup(context)
-            .apply(springSecurity())
-            .build();
-
         // Get all the discLogList
-        restDiscLogMockMvc.perform(get("/api/disc-logs?sort=id,desc")
-            .with(user("admin").roles("ADMIN")))
+        restDiscLogMockMvc.perform(get("/api/disc-logs?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(discLog.getId().intValue())))
@@ -268,7 +255,8 @@ public class DiscLogResourceIntTest {
             .andExpect(jsonPath("$.[*].svctim").value(hasItem(DEFAULT_SVCTIM.doubleValue())))
             .andExpect(jsonPath("$.[*].await").value(hasItem(DEFAULT_AWAIT.doubleValue())))
             .andExpect(jsonPath("$.[*].avgqusz").value(hasItem(DEFAULT_AVGQUSZ.doubleValue())))
-            .andExpect(jsonPath("$.[*].avgrqsz").value(hasItem(DEFAULT_AVGRQSZ.doubleValue())));
+            .andExpect(jsonPath("$.[*].avgrqsz").value(hasItem(DEFAULT_AVGRQSZ.doubleValue())))
+            .andExpect(jsonPath("$.[*].date").value(hasItem(sameInstant(DEFAULT_DATE))));
     }
 
     @Test
@@ -286,7 +274,8 @@ public class DiscLogResourceIntTest {
             .andExpect(jsonPath("$.svctim").value(DEFAULT_SVCTIM.doubleValue()))
             .andExpect(jsonPath("$.await").value(DEFAULT_AWAIT.doubleValue()))
             .andExpect(jsonPath("$.avgqusz").value(DEFAULT_AVGQUSZ.doubleValue()))
-            .andExpect(jsonPath("$.avgrqsz").value(DEFAULT_AVGRQSZ.doubleValue()));
+            .andExpect(jsonPath("$.avgrqsz").value(DEFAULT_AVGRQSZ.doubleValue()))
+            .andExpect(jsonPath("$.date").value(sameInstant(DEFAULT_DATE)));
     }
 
     @Test
@@ -311,7 +300,8 @@ public class DiscLogResourceIntTest {
                 .svctim(UPDATED_SVCTIM)
                 .await(UPDATED_AWAIT)
                 .avgqusz(UPDATED_AVGQUSZ)
-                .avgrqsz(UPDATED_AVGRQSZ);
+                .avgrqsz(UPDATED_AVGRQSZ)
+                .date(UPDATED_DATE);
 
         restDiscLogMockMvc.perform(put("/api/disc-logs")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -327,6 +317,7 @@ public class DiscLogResourceIntTest {
         assertThat(testDiscLog.getAwait()).isEqualTo(UPDATED_AWAIT);
         assertThat(testDiscLog.getAvgqusz()).isEqualTo(UPDATED_AVGQUSZ);
         assertThat(testDiscLog.getAvgrqsz()).isEqualTo(UPDATED_AVGRQSZ);
+        assertThat(testDiscLog.getDate()).isEqualTo(UPDATED_DATE);
     }
 
     @Test

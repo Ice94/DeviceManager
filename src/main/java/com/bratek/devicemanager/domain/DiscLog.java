@@ -6,6 +6,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 /**
@@ -42,6 +43,9 @@ public class DiscLog implements Serializable {
     @NotNull
     @Column(name = "avgrqsz", nullable = false)
     private Double avgrqsz;
+
+    @Column(name = "date")
+    private ZonedDateTime date;
 
     @ManyToOne
     private Disc disc;
@@ -127,6 +131,19 @@ public class DiscLog implements Serializable {
         this.avgrqsz = avgrqsz;
     }
 
+    public ZonedDateTime getDate() {
+        return date;
+    }
+
+    public DiscLog date(ZonedDateTime date) {
+        this.date = date;
+        return this;
+    }
+
+    public void setDate(ZonedDateTime date) {
+        this.date = date;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -156,6 +173,7 @@ public class DiscLog implements Serializable {
             ", await='" + await + "'" +
             ", avgqusz='" + avgqusz + "'" +
             ", avgrqsz='" + avgrqsz + "'" +
+            ", date='" + date + "'" +
             '}';
     }
 }

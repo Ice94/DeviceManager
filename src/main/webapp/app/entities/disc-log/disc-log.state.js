@@ -100,6 +100,7 @@
                                 await: null,
                                 avgqusz: null,
                                 avgrqsz: null,
+                                date: null,
                                 id: null
                             };
                         }

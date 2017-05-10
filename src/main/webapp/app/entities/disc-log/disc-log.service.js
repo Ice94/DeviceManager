@@ -4,9 +4,9 @@
         .module('deviceManagerApp')
         .factory('DiscLog', DiscLog);
 
-    DiscLog.$inject = ['$resource'];
+    DiscLog.$inject = ['$resource', 'DateUtils'];
 
-    function DiscLog ($resource) {
+    function DiscLog ($resource, DateUtils) {
         var resourceUrl =  'api/disc-logs/:id';
 
         return $resource(resourceUrl, {}, {
@@ -16,6 +16,7 @@
                 transformResponse: function (data) {
                     if (data) {
                         data = angular.fromJson(data);
+                        data.date = DateUtils.convertDateTimeFromServer(data.date);
                     }
                     return data;
                 }

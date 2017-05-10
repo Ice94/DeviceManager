@@ -36,11 +36,15 @@
             "fieldValidateRules": [
                 "required"
             ]
+        },
+        {
+            "fieldName": "date",
+            "fieldType": "ZonedDateTime"
         }
     ],
     "changelogDate": "20170421201757",
-    "entityTableName": "disc_log",
     "dto": "no",
-    "pagination": "no",
-    "service": "no"
+    "service": "no",
+    "entityTableName": "disc_log",
+    "pagination": "no"
 }
