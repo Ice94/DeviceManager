@@ -46,7 +46,7 @@ public class DiscLog implements Serializable {
     @Column(name = "avgrqsz", nullable = false)
     private Double avgrqsz;
 
-    @Column(name = "date")
+    @Column(name = "date", insertable = false, columnDefinition = "now()")
     private ZonedDateTime date;
 
     @ManyToOne(fetch = FetchType.LAZY)

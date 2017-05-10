@@ -30,10 +30,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -119,14 +116,12 @@ public class ConnectionResource {
                                 discLog.setAvgqusz(deviceStatistic.getAvgrusz());
                                 discLog.setAvgrqsz(deviceStatistic.getAvgrqsz());
                                 discLog.setAwait(deviceStatistic.getAwait());
-                                discLog.setDate(ZonedDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                                 discLog.setSvctim(deviceStatistic.getSvctm());
                                 discLog.setUtil(deviceStatistic.getUtil());
                                 tmp.getDiscLogs().add(discLog);
                                 discLogRepository.save(discLog);
                             }
                         }
-                        System.out.println();
                     }
                 } catch (JSchException e) {
                     e.printStackTrace();
