@@ -7,10 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -95,5 +92,54 @@ public class SSHConnector {
         session.disconnect();
 
         return devices;
+    }
+
+    public static List<DeviceStatistic> getDeviceStatistisc () throws JSchException, IOException {
+        List<DeviceStatistic> statistics = new ArrayList<>();
+
+        final String host = "taurus.fis.agh.edu.pl";
+        final String userName = "3bratek";
+        final String password = "lesserseways";
+        final String command = "iostat -d -x -t -m";
+
+        JSch jSch = new JSch();
+
+        Properties config = new Properties();
+        config.put("StrictHostKeyChecking", "no");
+
+        Session session = jSch.getSession(userName,host,22);
+        session.setPassword(password);
+        session.setConfig(config);
+        session.connect();
+
+        Channel channel = session.openChannel("exec");
+        ((ChannelExec) channel).setCommand(command);
+        channel.setXForwarding(true);
+        channel.setInputStream(System.in);
+
+        InputStream inputStream = channel.getInputStream();
+
+        channel.connect();
+
+        StringWriter stringWriter = new StringWriter();
+        IOUtils.copy(inputStream, stringWriter);
+
+        String result []= StringUtils.substringAfter(stringWriter.toString(), "%util\n").split("\\r?\\n");
+
+        List<String> names = Arrays.asList(result);
+
+
+        for (String tmp: names) {
+            DeviceStatistic deviceStatistic = new DeviceStatistic(tmp);
+            statistics.add(deviceStatistic);
+        }
+
+
+        System.out.println(new Date());
+
+        channel.disconnect();
+        session.disconnect();
+
+        return statistics;
     }
 }

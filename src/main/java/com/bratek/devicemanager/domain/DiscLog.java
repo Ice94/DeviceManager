@@ -2,6 +2,8 @@ package com.bratek.devicemanager.domain;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -47,7 +49,8 @@ public class DiscLog implements Serializable {
     @Column(name = "date")
     private ZonedDateTime date;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @NotFound(action = NotFoundAction.IGNORE)
     private Disc disc;
 
     public Disc getDisc() {

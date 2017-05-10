@@ -1,9 +1,12 @@
 package com.bratek.devicemanager.web.rest;
 
+import com.bratek.devicemanager.SSHConnector.DeviceStatistic;
 import com.bratek.devicemanager.SSHConnector.SSHConnector;
 import com.bratek.devicemanager.domain.Connection;
 import com.bratek.devicemanager.domain.Disc;
+import com.bratek.devicemanager.domain.DiscLog;
 import com.bratek.devicemanager.repository.ConnectionRepository;
+import com.bratek.devicemanager.repository.DiscLogRepository;
 import com.bratek.devicemanager.repository.DiscRepository;
 import com.bratek.devicemanager.repository.UserRepository;
 import com.bratek.devicemanager.security.AuthoritiesConstants;
@@ -27,9 +30,16 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * REST controller for managing Connection.
@@ -53,6 +63,9 @@ public class ConnectionResource {
 
     @Autowired
     private DiscRepository discRepository;
+
+    @Autowired
+    private DiscLogRepository discLogRepository;
 
     public ConnectionResource(ConnectionRepository connectionRepository) {
         this.connectionRepository = connectionRepository;
@@ -81,14 +94,48 @@ public class ConnectionResource {
         Connection result = connectionRepository.save(connection);
         sshConnector = new SSHConnector(result.getUserHost(), result.getPassword());
         List<String> names = sshConnector.getDiscNames();
+        List<Disc> discs = new ArrayList<>();
 
         for (String tmp: names) {
             Disc disc = new Disc();
             disc.setConnection(result);
             disc.setName(tmp);
-            disc.setId(new Random().nextLong());
+            discs.add(disc);
             discRepository.save(disc);
         }
+
+        final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        final ScheduledFuture<?> handle = executorService.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    List<DeviceStatistic> deviceStatistics = sshConnector.getDeviceStatistisc();
+                    int i = 0;
+                for (Disc tmp: discs) {
+                        for (DeviceStatistic deviceStatistic : deviceStatistics) {
+                            if(tmp.getName().equals(deviceStatistic.getName())) {
+                                DiscLog discLog = new DiscLog();
+                                discLog.setDisc(tmp);
+                                discLog.setAvgqusz(deviceStatistic.getAvgrusz());
+                                discLog.setAvgrqsz(deviceStatistic.getAvgrqsz());
+                                discLog.setAwait(deviceStatistic.getAwait());
+                                discLog.setDate(ZonedDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+                                discLog.setSvctim(deviceStatistic.getSvctm());
+                                discLog.setUtil(deviceStatistic.getUtil());
+                                tmp.getDiscLogs().add(discLog);
+                                discLogRepository.save(discLog);
+                            }
+                        }
+                        System.out.println();
+                    }
+                } catch (JSchException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        },0,60, TimeUnit.SECONDS);
+
 
         return ResponseEntity.created(new URI("/api/connections/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
