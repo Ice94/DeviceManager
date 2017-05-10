@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Created by Mateusz on 2017-05-09.
@@ -64,8 +65,6 @@ public class SSHConnector {
 
         Session session = jSch.getSession(user,host,22);
         session.setPassword(password);
-//        session.setX11Host(xhost);
-//        session.setX11Port(xport);
         session.setConfig(config);
         session.connect();
 
@@ -88,9 +87,7 @@ public class SSHConnector {
         names.forEach(System.out::println);
 
 
-        for (String tmp: names) {
-            devices.add(StringUtils.substringBefore(tmp," "));
-        }
+        devices.addAll(names.stream().map(tmp -> StringUtils.substringBefore(tmp, " ")).collect(Collectors.toList()));
 
         devices.forEach(System.out::println);
 
