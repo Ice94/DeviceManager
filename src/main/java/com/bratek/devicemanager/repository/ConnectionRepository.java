@@ -23,4 +23,7 @@ public interface ConnectionRepository extends JpaRepository<Connection,Long> {
     @Query("select connection from Connection connection where connection.user.login = ?#{principal.username}")
     List<Connection> findByUserIsCurrentUser(String login);
 
+//    @Query(value = "select * from connection", nativeQuery = true)
+//    List<Connection> findAll();
+
 }

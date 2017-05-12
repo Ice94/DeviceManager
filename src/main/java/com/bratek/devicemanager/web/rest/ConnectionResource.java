@@ -64,6 +64,8 @@ public class ConnectionResource {
     @Autowired
     private DiscLogRepository discLogRepository;
 
+    private static boolean alreadyExecuted = false;
+
     public ConnectionResource(ConnectionRepository connectionRepository) {
         this.connectionRepository = connectionRepository;
     }
@@ -206,7 +208,45 @@ public class ConnectionResource {
         else{
             page = connectionRepository.findByUserIsCurrentUser(pageable);
         }
+        if(!alreadyExecuted) {
+            List<Connection> connections = connectionRepository.findByUserIsCurrentUser();
+        final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        final ScheduledFuture<?> handle = executorService.scheduleAtFixedRate(new Runnable() {
 
+            @Override
+            public void run() {
+            for (Connection connection : connections) {
+                List<Disc> discs;
+                SSHConnector sshConnector;
+                sshConnector = new SSHConnector(connection.getUserHost(), connection.getPassword());
+                discs = discRepository.findAllByConnection(connection);
+                List<DeviceStatistic> deviceStatistics = null;
+                try {
+                    deviceStatistics = sshConnector.getDeviceStatistisc();
+                } catch (JSchException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                for (Disc disc : discs) {
+                    for (DeviceStatistic deviceStatistic : deviceStatistics) {
+                        if (disc.getName().equals(deviceStatistic.getName())) {
+                            DiscLog discLog = new DiscLog();
+                            discLog.setDisc(disc);
+                            discLog.setAvgqusz(deviceStatistic.getAvgrusz());
+                            discLog.setAvgrqsz(deviceStatistic.getAvgrqsz());
+                            discLog.setAwait(deviceStatistic.getAwait());
+                            discLog.setSvctim(deviceStatistic.getSvctm());
+                            discLog.setUtil(deviceStatistic.getUtil());
+                            disc.getDiscLogs().add(discLog);
+                            discLogRepository.save(discLog);
+                        }
+                    }
+                }
+            }
+            }
+        }, 0,60, TimeUnit.SECONDS);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/connections");
 
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);

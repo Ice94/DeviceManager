@@ -33,7 +33,7 @@ public class Disc implements Serializable {
     @ManyToOne
     private Connection connection;
 
-    @OneToMany(mappedBy = "disc")
+    @OneToMany(mappedBy = "disc", fetch = FetchType.EAGER)
     @JsonIgnore
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<DiscLog> discLogs = new HashSet<>();
