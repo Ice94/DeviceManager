@@ -1,13 +1,13 @@
 package com.bratek.devicemanager.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
 import com.bratek.devicemanager.domain.DiscLog;
-
 import com.bratek.devicemanager.repository.DiscLogRepository;
 import com.bratek.devicemanager.web.rest.util.HeaderUtil;
+import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +27,11 @@ public class DiscLogResource {
     private final Logger log = LoggerFactory.getLogger(DiscLogResource.class);
 
     private static final String ENTITY_NAME = "discLog";
-        
+
     private final DiscLogRepository discLogRepository;
+
+    @Autowired
+    private DiscResource discResource;
 
     public DiscLogResource(DiscLogRepository discLogRepository) {
         this.discLogRepository = discLogRepository;
@@ -117,4 +120,14 @@ public class DiscLogResource {
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 
+    @GetMapping("/disc-logs/per-disc/{id}")
+    @Timed
+    public List<DiscLog> getDiscLogsByDisc(@PathVariable Long id) {
+        log.debug("REST request to get Disc : {}", id);
+
+        log.debug("REST request to get a page of Discs");
+        List<DiscLog> discLogs = discLogRepository.findByDiscIdOrderByDate(id);
+
+        return discLogs;
+    }
 }

@@ -21,7 +21,8 @@
                     return data;
                 }
             },
-            'update': { method:'PUT' }
+            'update': { method:'PUT' },
+            'getLogs': { method: 'GET', isArray: true, url: 'api/disc-logs/per-disc/:id'}
         });
     }
 })();

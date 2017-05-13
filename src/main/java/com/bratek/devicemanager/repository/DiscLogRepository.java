@@ -12,4 +12,5 @@ import java.util.List;
 @SuppressWarnings("unused")
 public interface DiscLogRepository extends JpaRepository<DiscLog,Long> {
 
+    List<DiscLog> findByDiscIdOrderByDate(Long discId);
 }
