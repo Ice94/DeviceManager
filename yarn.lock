@@ -75,6 +75,14 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
+angular-chartist.js@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/angular-chartist.js/-/angular-chartist.js-4.3.1.tgz#52391825fd19f346ca9184a5cc5b8bc9885ae32f"
+
+angular@^1.6.4:
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.6.4.tgz#03b7b15c01a0802d7e2cf593240e604054dc77fb"
+
 ansi-escapes@^1.1.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-1.4.0.tgz#d3a8a83b319aa67793662b13e761c7911422306e"
@@ -660,6 +668,10 @@ chart.js@^2.5.0:
   dependencies:
     chartjs-color "^2.0.0"
     moment "^2.10.6"
+
+chartist@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/chartist/-/chartist-0.11.0.tgz#84ba5e05490d096d93dcfa9343ebc31ef6a3bd28"
 
 chartjs-color-string@^0.4.0:
   version "0.4.0"

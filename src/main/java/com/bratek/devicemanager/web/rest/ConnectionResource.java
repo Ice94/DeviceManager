@@ -1,10 +1,8 @@
 package com.bratek.devicemanager.web.rest;
 
-import com.bratek.devicemanager.SSHConnector.DeviceStatistic;
 import com.bratek.devicemanager.SSHConnector.SSHConnector;
 import com.bratek.devicemanager.domain.Connection;
 import com.bratek.devicemanager.domain.Disc;
-import com.bratek.devicemanager.domain.DiscLog;
 import com.bratek.devicemanager.repository.ConnectionRepository;
 import com.bratek.devicemanager.repository.DiscLogRepository;
 import com.bratek.devicemanager.repository.DiscRepository;
@@ -33,10 +31,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * REST controller for managing Connection.
@@ -102,37 +96,6 @@ public class ConnectionResource {
             discs.add(disc);
             discRepository.save(disc);
         }
-
-        final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        final ScheduledFuture<?> handle = executorService.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    List<DeviceStatistic> deviceStatistics = sshConnector.getDeviceStatistisc();
-                    int i = 0;
-                for (Disc tmp: discs) {
-                        for (DeviceStatistic deviceStatistic : deviceStatistics) {
-                            if(tmp.getName().equals(deviceStatistic.getName())) {
-                                DiscLog discLog = new DiscLog();
-                                discLog.setDisc(tmp);
-                                discLog.setAvgqusz(deviceStatistic.getAvgrusz());
-                                discLog.setAvgrqsz(deviceStatistic.getAvgrqsz());
-                                discLog.setAwait(deviceStatistic.getAwait());
-                                discLog.setSvctim(deviceStatistic.getSvctm());
-                                discLog.setUtil(deviceStatistic.getUtil());
-                                tmp.getDiscLogs().add(discLog);
-                                discLogRepository.save(discLog);
-                            }
-                        }
-                    }
-                } catch (JSchException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        },0,60, TimeUnit.SECONDS);
-
 
         return ResponseEntity.created(new URI("/api/connections/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -208,45 +171,7 @@ public class ConnectionResource {
         else{
             page = connectionRepository.findByUserIsCurrentUser(pageable);
         }
-        if(!alreadyExecuted) {
-            List<Connection> connections = connectionRepository.findByUserIsCurrentUser();
-        final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        final ScheduledFuture<?> handle = executorService.scheduleAtFixedRate(new Runnable() {
 
-            @Override
-            public void run() {
-            for (Connection connection : connections) {
-                List<Disc> discs;
-                SSHConnector sshConnector;
-                sshConnector = new SSHConnector(connection.getUserHost(), connection.getPassword());
-                discs = discRepository.findAllByConnection(connection);
-                List<DeviceStatistic> deviceStatistics = null;
-                try {
-                    deviceStatistics = sshConnector.getDeviceStatistisc();
-                } catch (JSchException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                for (Disc disc : discs) {
-                    for (DeviceStatistic deviceStatistic : deviceStatistics) {
-                        if (disc.getName().equals(deviceStatistic.getName())) {
-                            DiscLog discLog = new DiscLog();
-                            discLog.setDisc(disc);
-                            discLog.setAvgqusz(deviceStatistic.getAvgrusz());
-                            discLog.setAvgrqsz(deviceStatistic.getAvgrqsz());
-                            discLog.setAwait(deviceStatistic.getAwait());
-                            discLog.setSvctim(deviceStatistic.getSvctm());
-                            discLog.setUtil(deviceStatistic.getUtil());
-                            disc.getDiscLogs().add(discLog);
-                            discLogRepository.save(discLog);
-                        }
-                    }
-                }
-            }
-            }
-        }, 0,60, TimeUnit.SECONDS);
-        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/connections");
 
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);

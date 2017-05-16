@@ -120,13 +120,14 @@ public class DiscLogResource {
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 
+
     @GetMapping("/disc-logs/per-disc/{id}")
     @Timed
     public List<DiscLog> getDiscLogsByDisc(@PathVariable Long id) {
         log.debug("REST request to get Disc : {}", id);
 
         log.debug("REST request to get a page of Discs");
-        List<DiscLog> discLogs = discLogRepository.findByDiscIdOrderByDate(id);
+        List<DiscLog> discLogs = discLogRepository.findByDiscIdOrderByDateDesc(id);
 
         return discLogs;
     }
