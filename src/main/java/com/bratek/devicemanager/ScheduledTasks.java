@@ -32,7 +32,7 @@ public class ScheduledTasks {
     private DiscLogRepository discLogRepository;
 
     @Scheduled(fixedRate = 60000)
-    public void reportCurrentTime(){
+    public void gatherData(){
         List<Connection> connections = connectionRepository.findAll();
         for (Connection connection : connections) {
             List<Disc> discs;
