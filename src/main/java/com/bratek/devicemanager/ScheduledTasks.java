@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -57,6 +58,7 @@ public class ScheduledTasks {
                         discLog.setAwait(deviceStatistic.getAwait());
                         discLog.setSvctim(deviceStatistic.getSvctm());
                         discLog.setUtil(deviceStatistic.getUtil());
+                        discLog.setDate(ZonedDateTime.now());
                         disc.getDiscLogs().add(discLog);
                         discLogRepository.save(discLog);
                     }
@@ -65,3 +67,4 @@ public class ScheduledTasks {
         }
     }
 }
+
