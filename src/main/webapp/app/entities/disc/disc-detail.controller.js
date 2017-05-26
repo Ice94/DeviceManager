@@ -97,13 +97,13 @@
                 chartData[2].push(discLog.avgqusz);
                 chartData[3].push(discLog.avgrqsz);
                 chartData[4].push(discLog.util);
-                chartLabels.push(discLog.date);
+                chartLabels.push(moment(discLog.date).format('LTS'));
             });
 
             $scope.labels = chartLabels;
             $scope.data = chartData;
 
-            console.log($scope.labels);
+         //   console.log($scope.labels);
             console.log($scope.data);
         };
     }

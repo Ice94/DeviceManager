@@ -29,6 +29,7 @@ module.exports = function (config) {
             'src/main/webapp/bower_components/d3/d3.js',
             'src/main/webapp/bower_components/nvd3/build/nv.d3.js',
             'src/main/webapp/bower_components/chart.js/dist/Chart.js',
+            'src/main/webapp/bower_components/moment/moment.js',
             'src/main/webapp/bower_components/angular/angular.js',
             'src/main/webapp/bower_components/angular-aria/angular-aria.js',
             'src/main/webapp/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
