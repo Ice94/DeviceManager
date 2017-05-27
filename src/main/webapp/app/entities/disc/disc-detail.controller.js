@@ -33,7 +33,7 @@
             loadDiscLogs();
         }, dataReloadInterval);
 
-        $scope.series = ['svctim', 'await', 'avgqusz', 'avgrqsz','util'];
+        $scope.series = ['svctm', 'await', 'avgqusz', 'avgrqsz','util'];
 
         $scope.options = {
             legend: {"display": true}
@@ -97,7 +97,7 @@
                 chartData[2].push(discLog.avgqusz);
                 chartData[3].push(discLog.avgrqsz);
                 chartData[4].push(discLog.util);
-                chartLabels.push(moment(discLog.date).format('LTS'));
+                chartLabels.push(moment(discLog.date).format('LLL'));
             });
 
             $scope.labels = chartLabels;
